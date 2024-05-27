@@ -39,7 +39,11 @@ package projects.bullybella;
 
 import javax.swing.JOptionPane;
 
+import projects.bullybella.nodes.nodeImplementations.BullyNode;
+import sinalgo.configuration.Configuration;
+import sinalgo.exception.CorruptConfigurationEntryException;
 import sinalgo.runtime.AbstractCustomGlobal;
+import sinalgo.tools.Tools;
 
 /**
  * This class holds customized global state and methods for the framework. 
@@ -64,9 +68,7 @@ import sinalgo.runtime.AbstractCustomGlobal;
  */
 public class CustomGlobal extends AbstractCustomGlobal{
 	
-	/* (non-Javadoc)
-	 * @see runtime.AbstractCustomGlobal#hasTerminated()
-	 */
+
 	public boolean hasTerminated() {
 		return false;
 	}
@@ -91,4 +93,5 @@ public class CustomGlobal extends AbstractCustomGlobal{
 	public void sampleButton() {
 		JOptionPane.showMessageDialog(null, "You Pressed the 'GO' button.");
 	}
+
 }

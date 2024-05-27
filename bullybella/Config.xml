@@ -1,35 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Document>
 	<Framework>
-		<!--***********************************************************************-->
-		<!--  Simulation Area                                                      -->
-		<!--***********************************************************************-->
-		<!--Number of dimensions (2 for 2D, 3 for 3D)-->
-		<dimensions value="2" />
+		<!--*********************************************************************** -->
+        <!-- Simulation Area -->
+        <!--*********************************************************************** -->
+        <!--Number of dimensions (2 for 2D, 3 for 3D) -->
+        <dimensions value="2"/>
 
-		<!--Length of the deployment field along the x-axis.-->
-		<dimX value="1000" />
+        <!--Length of the deployment field along the x-axis. -->
+        <dimX value="1920"/>
 
-		<!--Length of the deployment field along the y-axis.-->
-		<dimY value="1000" />
+        <!--Length of the deployment field along the y-axis. -->
+        <dimY value="1000"/>
 
-		<!--Length of the deployment field along the z-axis.-->
-		<dimZ value="500" />
+        <!--Length of the deployment field along the z-axis. -->
+        <dimZ value="500"/>
 
-		<!--***********************************************************************-->
-		<!--  Simulation                                                           -->
-		<!--***********************************************************************-->
-		<!--Switches between synchronous and asynchronous mode.-->
-		<asynchronousMode value="false" />
+        <!--*********************************************************************** -->
+        <!-- Simulation -->
+        <!--*********************************************************************** -->
+        <!--Switches between synchronous and asynchronous mode. -->
+        <asynchronousMode value="false"/>
 
 		<!--If set to true, the runtime obtains for each node a new position from the mobility model at the beginning of each round. This flag needs to be turned on if the chosen  mobility model of any node may change the node's position. Set this flag to FALSE for static graphs whose nodes do never change their position to increase performance.-->
-		<mobility value="false" />
+		<mobility value="true" />
 
 		<!--If set to true, the chosen interference model is called at the end of every round to test for interferring packets. To increase performance, set this flag to FALSE if you do not consider interference.-->
 		<interference value="false" />
 
 		<!--Set this flag to true if interference only decreases if  less messages are being sent and increases if more messages are being sent. This flag enables considerable optimizations. -->
-		<interferenceIsAdditive value="false" />
+		<interferenceIsAdditive value="true" />
 
 		<!--Set this flag to true if a node can receive messages while it is sending messages itself, otherwise to false. This flag is only relevant if interference is turned on, and it must be handled properly in the used interference model.-->
 		<canReceiveWhileSending value="true" />
@@ -119,7 +119,7 @@
 		<DefaultConnectivityModel value="UDG" />
 
 		<!--Default distribution model used when none is specified-->
-		<DefaultDistributionModel value="Random" />
+		<DefaultDistributionModel value="Grid2D" />
 
 		<!--Default interference model used when none is specified-->
 		<DefaultInterferenceModel value="NoInterference" />
@@ -131,7 +131,7 @@
 		<DefaultReliabilityModel value="ReliableDelivery" />
 
 		<!--Default node implementation used when none is specified-->
-		<DefaultNodeImplementation value="DummyNode" />
+		<DefaultNodeImplementation value="bullybella:BullyNode" />
 
 		<!--***********************************************************************-->
 		<!--  Node storage, position transformation                                -->
@@ -177,31 +177,46 @@
 
 		<!--Indicates whether the background in the ps should be  white or gray.  The gray version is easier to understand (especially in 3D) but the white one should be more useful to be imported in reports.-->
 		<epsDrawBackgroundWhite value="true" />
+		
+		<!--Show the models implemented by all projects in the drop down options.
+            When set to false, only the models by the selected project and the default
+            project are shown. -->
+        <showModelsOfAllProjects value="false"/>
+        
+        <!--Height of the output text field in pixels. -->
+        <outputTextFieldHeight value="200"/>
 
 	</Framework>
 	<Custom>
-<MessageTransmission ConstantTime="1"/>
-	
-<Node defaultSize="10" />
-
-<GeometricNodeCollection rMax="100"/>
-
-<UDG rMax="100"/>
-
-<SINR alpha="2" beta="0.7" noise="0"/>
-
-<RandomWayPoint>
-	<Speed distribution="Gaussian" mean="10" variance="20" />
-	<WaitingTime distribution="Poisson" lambda="10" />
-</RandomWayPoint>
-
-<RandomDirection>
-	<NodeSpeed distribution="Gaussian" mean="10" variance="20" />
-	<WaitingTime distribution="Poisson" lambda="10" />
-	<MoveTime distribution="Uniform" min="5" max="20" />
-</RandomDirection>
-
-<QUDG rMin="30" rMax="50" ProbabilityType="constant" connectionProbability="0.6"/>
-		</Custom>
+		<MessageTransmission constantTime="1"/>
+        <RandomMessageTransmission distribution="Uniform" min="1" max="2"/>
+		
+		<Node defaultSize="2" />
+		
+		<BullyNode Size="2" />
+		<BullyNode InitialState="DOWN"/>
+		
+		<GeometricNodeCollection rMax="750"/>
+		
+		<UDG rMax="10"/>
+		
+		<SINR alpha="2" beta="0.7" noise="0"/>
+		
+		<RandomWayPoint>
+            <Speed distribution="Gaussian" mean="10" variance="20"/>
+            <WaitingTime distribution="Poisson" lambda="10"/>
+        </RandomWayPoint>
+		
+		<RandomDirection>
+            <NodeSpeed distribution="Gaussian" mean="2" variance="6"/>
+            <WaitingTime distribution="Poisson" lambda="10"/>
+            <MoveTime distribution="Uniform" min="5" max="20"/>
+        </RandomDirection>
+		
+		<QUDG rMin="30" rMax="50" ProbabilityType="constant" connectionProbability="0.6"/>
+		
+		<AutoStart value="false"/>
+        <ExitAfter value="false" rounds="100"/>
+	</Custom>
 </Document>
 
