@@ -2,6 +2,7 @@ package projects.bully_election_std.nodes.nodeImplementations;
 
 import java.awt.Color;
 import java.awt.Graphics;
+
 import sinalgo.configuration.Configuration;
 import sinalgo.configuration.CorruptConfigurationEntryException;
 import sinalgo.gui.transformation.PositionTransformation;

@@ -1,6 +1,9 @@
 package projects.bully_election_std.states;
 
+import java.util.Date;
+
 import projects.bully_election_std.CustomGlobal;
+import projects.bully_election_std.nodes.messages.ApplicationMessage;
 import projects.bully_election_std.nodes.messages.BullyMessage;
 import projects.bully_election_std.nodes.nodeImplementations.ElectionNode;
 import projects.bully_election_std.nodes.timers.ElectionTimeoutTimer;
@@ -90,6 +93,9 @@ public class ElectionNodeStateNormal extends ElectionNodeState {
     @Override
     public void handleUpdate() {
         global.workDone++;
+        
+        ApplicationMessage appMsg = new ApplicationMessage(ctx.ID, new Date());
+        ctx.broadcast(appMsg);
 
         if (ctx.ID > ctx.coordinatorId){
             ctx.setState(States.ElectionCandidate);
@@ -97,4 +103,10 @@ public class ElectionNodeStateNormal extends ElectionNodeState {
             ctx.c = -1;
         }
     }
+
+	@Override
+	public void updateApplicationStatus(ApplicationMessage msg) {
+		Tools.appendToOutput("Node " + ctx.ID + " is updating application status from " + msg.senderID + "\n");
+		ctx.setApplicationStatus(msg);
+	}
 }

@@ -41,7 +41,6 @@ import java.awt.Color;
 
 import projects.sample3.nodes.nodeImplementations.MobileNode;
 import projects.sample3.nodes.timers.SmsTimer;
-
 import sinalgo.nodes.Node;
 import sinalgo.runtime.AbstractCustomGlobal;
 import sinalgo.tools.Tools;

@@ -39,11 +39,7 @@ package projects.bullybella;
 
 import javax.swing.JOptionPane;
 
-import projects.bullybella.nodes.nodeImplementations.BullyNode;
-import sinalgo.configuration.Configuration;
-import sinalgo.exception.CorruptConfigurationEntryException;
 import sinalgo.runtime.AbstractCustomGlobal;
-import sinalgo.tools.Tools;
 
 /**
  * This class holds customized global state and methods for the framework. 

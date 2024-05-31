@@ -1,5 +1,6 @@
 package projects.bully_election_std.states;
 
+import projects.bully_election_std.nodes.messages.ApplicationMessage;
 import projects.bully_election_std.nodes.messages.BullyMessage;
 import projects.bully_election_std.nodes.nodeImplementations.ElectionNode;
 import projects.bully_election_std.nodes.timers.ElectionTimeoutTimer;
@@ -63,4 +64,9 @@ public class ElectionNodeStateDown extends ElectionNodeState {
             }
         }
     }
+
+	@Override
+	public void updateApplicationStatus(ApplicationMessage msg) {
+		
+	}
 }

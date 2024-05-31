@@ -1,14 +1,14 @@
 package projects.bully_election_std.states;
 
-import sinalgo.tools.Tools;
-import sinalgo.tools.logging.Logging;
-
 import java.util.ArrayList;
+import java.util.Date;
 
 import projects.bully_election_std.CustomGlobal;
+import projects.bully_election_std.nodes.messages.ApplicationMessage;
 import projects.bully_election_std.nodes.messages.BullyMessage;
 import projects.bully_election_std.nodes.nodeImplementations.ElectionNode;
 import projects.bully_election_std.nodes.timers.ElectionTimeoutTimer;
+import sinalgo.tools.Tools;
 
 public class ElectionNodeStateNormalCoordinator extends ElectionNodeState {
 
@@ -108,5 +108,14 @@ public class ElectionNodeStateNormalCoordinator extends ElectionNodeState {
     @Override
     public void handleUpdate() {
         global.workDone++;
+        
+        ApplicationMessage appMsg = new ApplicationMessage(ctx.ID, new Date());
+        ctx.broadcast(appMsg);
     }
+
+	@Override
+	public void updateApplicationStatus(ApplicationMessage msg) {
+		Tools.appendToOutput("Node " + ctx.ID + " is updating application status from " + msg.senderID + "\n");
+		ctx.setApplicationStatus(msg);
+	}
 }

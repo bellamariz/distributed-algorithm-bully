@@ -36,22 +36,32 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package projects.bully_election_std.nodes.nodeImplementations;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.util.ArrayList;
+import java.util.logging.Logger;
+
+import projects.bully_election_std.nodes.messages.ApplicationMessage;
 import projects.bully_election_std.nodes.messages.BullyMessage;
 import projects.bully_election_std.nodes.timers.ElectionTimeoutTimer;
 import projects.bully_election_std.nodes.timers.ElectionUpdateTimer;
-import projects.bully_election_std.states.*;
+import projects.bully_election_std.states.ElectionNodeState;
+import projects.bully_election_std.states.ElectionNodeStateDown;
+import projects.bully_election_std.states.ElectionNodeStateElectionCandidate;
+import projects.bully_election_std.states.ElectionNodeStateElectionParticipant;
+import projects.bully_election_std.states.ElectionNodeStateNormal;
+import projects.bully_election_std.states.ElectionNodeStateNormalCoordinator;
 import sinalgo.configuration.Configuration;
 import sinalgo.configuration.CorruptConfigurationEntryException;
-import sinalgo.exception.SinalgoFatalException;
 import sinalgo.configuration.WrongConfigurationException;
+import sinalgo.exception.SinalgoFatalException;
 import sinalgo.gui.transformation.PositionTransformation;
 import sinalgo.nodes.Node;
-import sinalgo.nodes.messages.Inbox;
 import sinalgo.tools.Tools;
+import sinalgo.tools.Tuple;
+import sinalgo.nodes.messages.Inbox;
+import sinalgo.nodes.messages.Message;
 import sinalgo.tools.logging.Logging;
-
-import java.awt.*;
-import java.util.ArrayList;
 
 /**
  * The Node of the sample project.
@@ -71,11 +81,12 @@ public class ElectionNode extends Node {
     public long c;
     public int coordinatorId;
     public ArrayList <Integer> up = new ArrayList<>();
+    public ArrayList <ApplicationStatus> lastApplicationStatus = new ArrayList<>();
     public int reliability;
 
     public ElectionTimeoutTimer activeTimeout = new ElectionTimeoutTimer(BullyMessage.MessageType.AYUp);
 
-    Logging log = Logging.getLogger("election_log");
+    Logging logger = Logging.getLogger("election_log");
 
     private boolean isCoordinator() {
         return (this.ID == coordinatorId);
@@ -101,16 +112,59 @@ public class ElectionNode extends Node {
         }
     }
 
+
+	public void setApplicationStatus(ApplicationMessage msg) {
+		ApplicationStatus newStatus = new ApplicationStatus(msg.senderID, msg.lastUpdate);
+		int index = getApplicationStatusIndex(msg.senderID);
+		
+		// TODO: Lista esta ficando com elementos repetidos
+		// Sera que eu tenho que remover o broadcast(msg) do handleUpdate?
+		
+		if (index > 0) {
+			this.lastApplicationStatus.remove(index);
+		}
+		
+		this.lastApplicationStatus.add(newStatus);
+    }
+	
+	private int getApplicationStatusIndex(long nodeID) {
+		for(int i = 0; i < this.lastApplicationStatus.size(); i++) {
+			if (this.lastApplicationStatus.get(i).getNodeID() == nodeID) {
+				return i;
+			}
+		}
+		
+		return -1;
+	}
+	
+	private String applicationStatusToString() {
+		String output = "";
+		
+		for(ApplicationStatus currStatus: this.lastApplicationStatus) {
+			output += "[ ID: " + currStatus.getNodeID() + " - Update: " + currStatus.getLastUpdate().toString() + " ]\n";
+		}
+		
+		return output;
+	}
+
     @Override
     public void handleMessages(Inbox inbox) {
         while (inbox.hasNext()) {
-            BullyMessage msg = (BullyMessage) inbox.next();
-            this.state.handleMessage(msg);
+        	Message msg = inbox.next();
+        	
+        	if (msg instanceof BullyMessage) {
+        		BullyMessage bullyMsg = (BullyMessage) msg;
+        		this.state.handleMessage(bullyMsg);
+        	}else if (msg instanceof ApplicationMessage) {
+        		ApplicationMessage appMsg = (ApplicationMessage) msg;
+        		this.state.updateApplicationStatus(appMsg);
+        	}
         }
     }
 
     @Override
     public void preStep() {
+   
     }
 
     @Override
@@ -174,7 +228,13 @@ public class ElectionNode extends Node {
 
     @Override
     public void postStep() {
-
+    	String output = "";
+    	
+    	if (!this.lastApplicationStatus.isEmpty()){
+			output = "Node " + this.ID + " application status: " + applicationStatusToString() + "\n";
+		}
+    	
+    	Tools.appendToOutput(output);
     }
 
     @Override

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import projects.bullybella.nodes.messages.BullyMessage;
 import projects.bullybella.nodes.nodeImplementations.BullyNode;
 import sinalgo.tools.Tools;
-import sinalgo.tools.Tuple;
 
 public class NodeStateNormal extends NodeState{
 	

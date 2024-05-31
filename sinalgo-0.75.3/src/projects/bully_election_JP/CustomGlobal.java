@@ -37,13 +37,11 @@
 package projects.bully_election_JP;
 
 
-import java.awt.Color;
 import java.io.FileOutputStream;
 
 import sinalgo.configuration.Configuration;
 import sinalgo.configuration.CorruptConfigurationEntryException;
 import sinalgo.exception.SinalgoFatalException;
-import sinalgo.nodes.Node;
 import sinalgo.runtime.AbstractCustomGlobal;
 import sinalgo.tools.Tools;
 import sinalgo.tools.logging.Logging;

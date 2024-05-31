@@ -37,22 +37,27 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package projects.bully_election_JP.nodes.nodeImplementations;
 
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.util.ArrayList;
+
 import projects.bully_election_JP.nodes.messages.BullyMessage;
 import projects.bully_election_JP.nodes.timers.ElectionTimeoutTimer;
 import projects.bully_election_JP.nodes.timers.ElectionUpdateTimer;
-import projects.bully_election_JP.states.*;
+import projects.bully_election_JP.states.ElectionNodeState;
+import projects.bully_election_JP.states.ElectionNodeStateDown;
+import projects.bully_election_JP.states.ElectionNodeStateElectionCandidate;
+import projects.bully_election_JP.states.ElectionNodeStateElectionParticipant;
+import projects.bully_election_JP.states.ElectionNodeStateNormal;
+import projects.bully_election_JP.states.ElectionNodeStateNormalCoordinator;
 import sinalgo.configuration.Configuration;
 import sinalgo.configuration.CorruptConfigurationEntryException;
-import sinalgo.exception.SinalgoFatalException;
 import sinalgo.configuration.WrongConfigurationException;
+import sinalgo.exception.SinalgoFatalException;
 import sinalgo.gui.transformation.PositionTransformation;
 import sinalgo.nodes.Node;
 import sinalgo.nodes.messages.Inbox;
-import sinalgo.tools.Tools;
 import sinalgo.tools.logging.Logging;
-
-import java.awt.*;
-import java.util.ArrayList;
 
 /**
  * The Node of the sample project.

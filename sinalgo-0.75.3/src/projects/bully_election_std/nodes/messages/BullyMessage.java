@@ -2,10 +2,6 @@ package projects.bully_election_std.nodes.messages;
 
 import sinalgo.nodes.messages.Message;
 
-/**
- * The Messages that are sent by the ElectionNodes in the Election project. They
- * contain one bool as payload.
- */
 public class BullyMessage extends Message{
     public enum MessageType {
         AYUp, AYOk, EnterElection, SetCoordinator, SetState

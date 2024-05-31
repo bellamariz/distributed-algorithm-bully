@@ -38,7 +38,6 @@ package projects.sample4;
 
 import java.awt.Color;
 
-
 import javax.swing.JOptionPane;
 
 import sinalgo.nodes.Node;

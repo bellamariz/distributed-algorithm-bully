@@ -5,23 +5,18 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
 
-import projects.bullybella.LogL;
 import projects.bullybella.nodes.messages.ApplicationMessage;
 import projects.bullybella.nodes.messages.BullyMessage;
 import projects.bullybella.states.NodeState;
 import projects.bullybella.states.NodeStateDown;
 import projects.bullybella.states.NodeStateElection;
 import projects.bullybella.states.NodeStateNormal;
-import sinalgo.configuration.Configuration;
-import sinalgo.configuration.CorruptConfigurationEntryException;
 import sinalgo.configuration.WrongConfigurationException;
 import sinalgo.exception.SinalgoFatalException;
 import sinalgo.gui.transformation.PositionTransformation;
 import sinalgo.nodes.Node;
 import sinalgo.nodes.messages.Inbox;
 import sinalgo.nodes.messages.Message;
-import sinalgo.tools.Tuple;
-import sinalgo.tools.logging.Logging;
 
 public class BullyNode extends Node{
 	

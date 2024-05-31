@@ -1,6 +1,7 @@
 package projects.bully_election_std.states;
 
 import projects.bully_election_std.CustomGlobal;
+import projects.bully_election_std.nodes.messages.ApplicationMessage;
 import projects.bully_election_std.nodes.messages.BullyMessage;
 import projects.bully_election_std.nodes.nodeImplementations.ElectionNode;
 import sinalgo.tools.Tools;
@@ -66,4 +67,5 @@ public abstract class ElectionNodeState {
     public abstract void handleAck(BullyMessage msg);
     public abstract void handleTimeout();
     public abstract void handleUpdate();
+    public abstract void updateApplicationStatus(ApplicationMessage msg);
 }

@@ -1,13 +1,13 @@
 package projects.bully_election_std.states;
 
-import sinalgo.nodes.Node;
-import sinalgo.tools.Tools;
-
 import java.util.ArrayList;
 
+import projects.bully_election_std.nodes.messages.ApplicationMessage;
 import projects.bully_election_std.nodes.messages.BullyMessage;
 import projects.bully_election_std.nodes.nodeImplementations.ElectionNode;
 import projects.bully_election_std.nodes.timers.ElectionTimeoutTimer;
+import sinalgo.nodes.Node;
+import sinalgo.tools.Tools;
 
 public class ElectionNodeStateElectionCandidate extends ElectionNodeState {
     private final ArrayList<Integer> responded = new ArrayList<>();
@@ -173,4 +173,9 @@ public class ElectionNodeStateElectionCandidate extends ElectionNodeState {
     public void handleUpdate() {
 
     }
+
+	@Override
+	public void updateApplicationStatus(ApplicationMessage msg) {
+		
+	}
 }

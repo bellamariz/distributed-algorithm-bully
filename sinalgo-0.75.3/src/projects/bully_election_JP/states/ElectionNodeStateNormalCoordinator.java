@@ -1,14 +1,12 @@
 package projects.bully_election_JP.states;
 
-import sinalgo.tools.Tools;
-import sinalgo.tools.logging.Logging;
-
 import java.util.ArrayList;
 
 import projects.bully_election_JP.CustomGlobal;
 import projects.bully_election_JP.nodes.messages.BullyMessage;
 import projects.bully_election_JP.nodes.nodeImplementations.ElectionNode;
 import projects.bully_election_JP.nodes.timers.ElectionTimeoutTimer;
+import sinalgo.tools.Tools;
 
 public class ElectionNodeStateNormalCoordinator extends ElectionNodeState {
 

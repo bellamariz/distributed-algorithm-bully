@@ -1,13 +1,12 @@
 package projects.bully_election_JP.states;
 
-import sinalgo.nodes.Node;
-import sinalgo.tools.Tools;
-
 import java.util.ArrayList;
 
 import projects.bully_election_JP.nodes.messages.BullyMessage;
 import projects.bully_election_JP.nodes.nodeImplementations.ElectionNode;
 import projects.bully_election_JP.nodes.timers.ElectionTimeoutTimer;
+import sinalgo.nodes.Node;
+import sinalgo.tools.Tools;
 
 public class ElectionNodeStateElectionCandidate extends ElectionNodeState {
     private final ArrayList<Long> responded = new ArrayList<>();

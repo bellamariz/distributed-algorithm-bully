@@ -41,7 +41,6 @@ import java.lang.reflect.Method;
 import javax.swing.JOptionPane;
 
 import projects.sample2.nodes.nodeImplementations.S2Node;
-
 import sinalgo.nodes.Node;
 import sinalgo.runtime.AbstractCustomGlobal;
 import sinalgo.tools.Tools;
