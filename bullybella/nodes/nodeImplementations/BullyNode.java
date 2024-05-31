@@ -12,7 +12,6 @@ import projects.bullybella.states.NodeState;
 import projects.bullybella.states.NodeStateDown;
 import projects.bullybella.states.NodeStateElection;
 import projects.bullybella.states.NodeStateNormal;
-import projects.bullybella.states.NodeStateReorg;
 import sinalgo.configuration.Configuration;
 import sinalgo.configuration.CorruptConfigurationEntryException;
 import sinalgo.configuration.WrongConfigurationException;
@@ -26,15 +25,12 @@ import sinalgo.tools.logging.Logging;
 
 public class BullyNode extends Node{
 	
-	public Logging logger = Logging.getLogger();
-
-	// node variables
 	public int ID;
 	public int currCoordID;
 	public int halterID;
 	public int totalAnswersReceived;
 	public NodeState state;
-	public List<Tuple<Long,Boolean>> up = new ArrayList<Tuple<Long, Boolean>>();
+	public List<Integer> up;
 	public boolean isCandidate;
 	
 	public BullyNode() {
@@ -42,9 +38,14 @@ public class BullyNode extends Node{
 		this.currCoordID = 0;
 		this.halterID = 0;
 		this.totalAnswersReceived = 0;
+		this.up = new ArrayList<Integer>();
 	}
 	
+	
+	//
 	// getters and setters
+	//
+	
 	public boolean isCandidate() {
 		return isCandidate;
 	}
@@ -53,11 +54,11 @@ public class BullyNode extends Node{
 		this.isCandidate = isCandidate;
 	}
 	
-	public long getID() {
+	public int getID() {
 		return ID;
 	}
 	
-	public long getCurrCoordID() {
+	public int getCurrCoordID() {
 		return currCoordID;
 	}
 
@@ -65,7 +66,7 @@ public class BullyNode extends Node{
 		this.currCoordID = currCoordID;
 	}
 
-	public long getHalterID() {
+	public int getHalterID() {
 		return halterID;
 	}
 
@@ -73,6 +74,19 @@ public class BullyNode extends Node{
 		this.halterID = halterID;
 	}
 
+	public NodeState getState() {
+		return state;
+	}
+
+	public void setState(NodeState state) {
+		this.state = state;
+	}
+	
+	
+	//
+	// class methods
+	//
+	
 	 public void readStates(NodeState.States states) {
         switch (states) {
         case Normal:
@@ -84,27 +98,23 @@ public class BullyNode extends Node{
 		case Election:
 			this.state = new NodeStateElection(this);
 			break;
-		case Reorganizing:
-			this.state = new NodeStateReorg(this);
-			break;
 		default:
 			break;
         }
 	}
-	
-	
-	
-	// auxiliary methods
-	private boolean isCoordenator() {
+	 
+	public boolean isCoordenator() {
 		return this.getCurrCoordID() == this.getID();
 	}
 	
-	private void incrementAnswersReceived() {
+	public void incrementAnswersReceived() {
 		this.totalAnswersReceived++;
 	}
 	
 	
+	//
 	// inherited methods from Node class
+	//
 
 	@Override
 	public void handleMessages(Inbox inbox) {
@@ -126,7 +136,7 @@ public class BullyNode extends Node{
 
 	@Override
 	public void preStep() {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
@@ -144,19 +154,19 @@ public class BullyNode extends Node{
 
 	@Override
 	public void neighborhoodChange() {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
 	@Override
 	public void postStep() {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
 	@Override
 	public void checkRequirements() throws WrongConfigurationException {
-		// TODO Auto-generated method stub
+		
 		
 	}
 	
@@ -170,8 +180,6 @@ public class BullyNode extends Node{
             nodeColor = Color.BLUE;
         } else if (nodeState instanceof NodeStateElection) {
             nodeColor = Color.GREEN;
-        } else if (nodeState instanceof NodeStateReorg) {
-            nodeColor = Color.YELLOW;
         } else if (nodeState instanceof NodeStateDown) {
             nodeColor = Color.RED;
         } else {
@@ -191,5 +199,5 @@ public class BullyNode extends Node{
         // draw the node as a circle with the text inside
         super.drawNodeAsDiskWithText(g, pt, highlight, text, 50, Color.WHITE);
     }
-	
+
 }

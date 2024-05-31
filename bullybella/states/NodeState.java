@@ -2,6 +2,7 @@ package projects.bullybella.states;
 
 import projects.bullybella.nodes.messages.BullyMessage;
 import projects.bullybella.nodes.nodeImplementations.BullyNode;
+import sinalgo.tools.Tools;
 
 public abstract class NodeState {
 	final BullyNode node;
@@ -14,58 +15,53 @@ public abstract class NodeState {
 		Normal, Reorganizing, Down, Election
 	}
 	
-	public void handleMessage(BullyMessage msg) {
-		if (msg.msgAck) {
-            handleAck(msg);
-        } else {
-            switch (msg.msgType) {
-            case AYUp:
-                handleAYUp(msg);
-                break;
-            case AYNormal:
-                handleAYNormal(msg);
-                break;
-            case EnterElection:
-                handleEnterElection(msg);
-                break;
-            case SetCoordinator:
-                handleSetCoordinator(msg);
-                break;
-            case SetState:
-                handleSetState(msg);
-                break;
-            case AYUp_Answer:
-            	handleAYUpAnswer(msg);
-                break;
-            case AYNormal_Answer:
-            	handleAYNormalAnswer(msg);
-                break;
-            case EnterElection_Answer:
-            	handleEnterElectionAnswer(msg);
-                break;
-            case SetCoordinator_Answer:
-            	handleSetCoordinatorAnswer(msg);
-                break;
-			default:
-				break;    
-            }
+	public final void handleMessage(BullyMessage msg) {
+		if (msg.handleAnswer) {
+			handleAnswer(msg);
+		}
+        switch (msg.msgType) {
+        case AYUp:
+            handleAYUp(msg);
+            break;
+        case AYNormal:
+            handleAYNormal(msg);
+            break;
+        case EnterElection:
+            handleEnterElection(msg);
+            break;
+        case SetCoordinator:
+            handleSetCoordinator(msg);
+            break;
+        case SetState:
+            handleSetState(msg);
+            break;
+		default:
+			break;    
         }
 	}
 	
-	// reply message
-	public abstract void handleAck(BullyMessage msg);
-	
+    public void sendAnswer(BullyMessage msg) {
+        int senderId = msg.senderID;
+        BullyMessage answer = (BullyMessage) msg.clone();
+        answer.senderID = node.getID();
+        answer.coordID = node.currCoordID;
+        answer.handleAnswer = true;
+        node.send(answer, Tools.getNodeByID(senderId));
+    }
+    
+    // handle answers
+    public abstract void handleAnswer(BullyMessage msg);
+		
 	// when in normal/reorganizing
 	public abstract void handleAYNormal(BullyMessage msg);
 	public abstract void handleAYUp (BullyMessage msg);
-	public abstract void handleAYNormalAnswer(BullyMessage msg);
-	public abstract void handleAYUpAnswer(BullyMessage msg);
 
 	// when in election
     public abstract void handleEnterElection(BullyMessage msg);
     public abstract void handleSetCoordinator(BullyMessage msg);
     public abstract void handleSetState(BullyMessage msg);
-	public abstract void handleEnterElectionAnswer(BullyMessage msg);
-    public abstract void handleSetCoordinatorAnswer(BullyMessage msg);
+
+    // handle timeout
+	public abstract void handleTimeout();
 	
 }

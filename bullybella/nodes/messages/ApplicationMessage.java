@@ -6,7 +6,6 @@ public class ApplicationMessage extends Message{
 
 	@Override
 	public Message clone() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

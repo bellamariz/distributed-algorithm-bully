@@ -8,22 +8,22 @@ public class BullyMessage extends Message {
         AYUp_Answer, AYNormal_Answer, EnterElection_Answer, SetCoordinator_Answer
     }
     
-    public long senderID;
-    public long coordID;
+    public int senderID;
+    public int coordID;
     public MessageType msgType;
-    public boolean msgAck;
+    public boolean handleAnswer;
     //TODO: Message timer 
     
-    public BullyMessage(long senderID, long coordID, MessageType msgType, boolean msgAck) {
+    public BullyMessage(int senderID, int coordID, MessageType msgType, boolean handleAnswer) {
         this.senderID = senderID;
         this.coordID = coordID;
         this.msgType = msgType;
-        this.msgAck = msgAck;
+        this.handleAnswer = handleAnswer;
     }
 
 	@Override
 	public Message clone() {
-		return new BullyMessage(this.senderID, this.coordID, this.msgType, this.msgAck);
+		return new BullyMessage(this.senderID, this.coordID, this.msgType, this.handleAnswer);
 	}
 
 }

@@ -5,67 +5,51 @@ import projects.bullybella.nodes.nodeImplementations.BullyNode;
 
 public class NodeStateDown extends NodeState{
 
+	// node is down, it does not know the current COORD nor the UP processes
 	public NodeStateDown(BullyNode bn) {
 		super(bn);
-	}
-
-	@Override
-	public void handleAck(BullyMessage msg) {
-		// TODO Auto-generated method stub
-		
+		bn.currCoordID = -1;
+		bn.up.clear();
 	}
 
 	@Override
 	public void handleAYNormal(BullyMessage msg) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
 	@Override
 	public void handleAYUp(BullyMessage msg) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
 	@Override
 	public void handleEnterElection(BullyMessage msg) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
 	@Override
 	public void handleSetCoordinator(BullyMessage msg) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
 	@Override
 	public void handleSetState(BullyMessage msg) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
 	@Override
-	public void handleAYNormalAnswer(BullyMessage msg) {
-		// TODO Auto-generated method stub
+	public void handleAnswer(BullyMessage msg) {
+		
 		
 	}
 
 	@Override
-	public void handleAYUpAnswer(BullyMessage msg) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void handleEnterElectionAnswer(BullyMessage msg) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void handleSetCoordinatorAnswer(BullyMessage msg) {
-		// TODO Auto-generated method stub
+	public void handleTimeout() {
 		
 	}
 	
