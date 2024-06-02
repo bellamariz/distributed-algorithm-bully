@@ -9,6 +9,7 @@ import sinalgo.tools.Tools;
 public class ElectionNodeStateElectionParticipant extends ElectionNodeState {
     public ElectionNodeStateElectionParticipant(ElectionNode ctx) {
         super(ctx);
+        ctx.stopApplication();
         ctx.activeTimeout = new ElectionTimeoutTimer(BullyMessage.MessageType.SetCoordinator);
         ctx.activeTimeout.startRelative(8, ctx);
         Tools.appendToOutput("Node " + ctx.ID + " joining election\n");
@@ -77,7 +78,7 @@ public class ElectionNodeStateElectionParticipant extends ElectionNodeState {
     }
 
 	@Override
-	public void updateApplicationStatus(ApplicationMessage msg) {
+	public void handleApplication(ApplicationMessage msg) {
 		
 	}
 }

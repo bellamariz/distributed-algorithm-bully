@@ -7,6 +7,7 @@ import projects.bully_election_std.CustomGlobal;
 import projects.bully_election_std.nodes.messages.ApplicationMessage;
 import projects.bully_election_std.nodes.messages.BullyMessage;
 import projects.bully_election_std.nodes.nodeImplementations.ElectionNode;
+import projects.bully_election_std.nodes.timers.ApplicationMessageTimer;
 import projects.bully_election_std.nodes.timers.ElectionTimeoutTimer;
 import sinalgo.tools.Tools;
 
@@ -20,9 +21,12 @@ public class ElectionNodeStateNormalCoordinator extends ElectionNodeState {
         super(ctx);
 
         global = (CustomGlobal) Tools.getCustomGlobal();
+        
+        Tools.appendToOutput("Node " + ctx.ID + " became the coordinator\n");
+        
+        ctx.startApplication();
 
         pingChildren();
-        Tools.appendToOutput("Node " + ctx.ID + " became the coordinator\n");
     }
 
     public void pingChildren() {
@@ -107,15 +111,15 @@ public class ElectionNodeStateNormalCoordinator extends ElectionNodeState {
 
     @Override
     public void handleUpdate() {
-        global.workDone++;
-        
-        ApplicationMessage appMsg = new ApplicationMessage(ctx.ID, new Date());
-        ctx.broadcast(appMsg);
+        global.workDone++;      
     }
 
 	@Override
-	public void updateApplicationStatus(ApplicationMessage msg) {
-		Tools.appendToOutput("Node " + ctx.ID + " is updating application status from " + msg.senderID + "\n");
-		ctx.setApplicationStatus(msg);
+	public void handleApplication(ApplicationMessage msg) {
+		Tools.appendToOutput("\nNode " + ctx.ID + " is updating application status from " + msg.senderID + "\n");
+		if (ctx.appActive.putIfAbsent((int)msg.senderID, msg.lastUpdate) != null) {
+			ctx.appActive.replace((int)msg.senderID, msg.lastUpdate);
+		}
+		Tools.appendToOutput("Node " + ctx.ID + " appActive: " + ctx.appActive + "\n\n");
 	}
 }

@@ -278,6 +278,7 @@
 
     <Custom>
         <GeometricNodeCollection rMax="750"/>
+        <UDG rMax="500"/>
 
         <AutoStart value="false"/>
         <ExitAfter value="false" rounds="100"/>

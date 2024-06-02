@@ -16,6 +16,7 @@ public class ElectionNodeStateElectionCandidate extends ElectionNodeState {
         super(ctx);
         ctx.up.clear();
         ctx.coordinatorId = -1;
+        ctx.stopApplication();
 
         BullyMessage msg = new BullyMessage(ctx.ID, ctx.c, ctx.coordinatorId, BullyMessage.MessageType.AYUp, false);
 
@@ -175,7 +176,7 @@ public class ElectionNodeStateElectionCandidate extends ElectionNodeState {
     }
 
 	@Override
-	public void updateApplicationStatus(ApplicationMessage msg) {
+	public void handleApplication(ApplicationMessage msg) {
 		
 	}
 }

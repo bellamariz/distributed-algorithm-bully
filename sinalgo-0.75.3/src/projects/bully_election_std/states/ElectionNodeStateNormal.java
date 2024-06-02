@@ -6,6 +6,7 @@ import projects.bully_election_std.CustomGlobal;
 import projects.bully_election_std.nodes.messages.ApplicationMessage;
 import projects.bully_election_std.nodes.messages.BullyMessage;
 import projects.bully_election_std.nodes.nodeImplementations.ElectionNode;
+import projects.bully_election_std.nodes.timers.ApplicationMessageTimer;
 import projects.bully_election_std.nodes.timers.ElectionTimeoutTimer;
 import sinalgo.tools.Tools;
 
@@ -18,11 +19,14 @@ public class ElectionNodeStateNormal extends ElectionNodeState {
         super(ctx);
 
         global = (CustomGlobal) Tools.getCustomGlobal();
+        
+        ctx.startApplication();
+        
         ctx.c = 0;
 
         Tools.appendToOutput("Node " + ctx.ID + " going back to normal\n");
         ctx.activeTimeout = new ElectionTimeoutTimer(BullyMessage.MessageType.AYOk);
-        ctx.activeTimeout.startRelative(6, ctx);
+        ctx.activeTimeout.startRelative(6, ctx); 
     }
 
     @Override
@@ -93,9 +97,6 @@ public class ElectionNodeStateNormal extends ElectionNodeState {
     @Override
     public void handleUpdate() {
         global.workDone++;
-        
-        ApplicationMessage appMsg = new ApplicationMessage(ctx.ID, new Date());
-        ctx.broadcast(appMsg);
 
         if (ctx.ID > ctx.coordinatorId){
             ctx.setState(States.ElectionCandidate);
@@ -105,8 +106,11 @@ public class ElectionNodeStateNormal extends ElectionNodeState {
     }
 
 	@Override
-	public void updateApplicationStatus(ApplicationMessage msg) {
-		Tools.appendToOutput("Node " + ctx.ID + " is updating application status from " + msg.senderID + "\n");
-		ctx.setApplicationStatus(msg);
+	public void handleApplication(ApplicationMessage msg) {
+		Tools.appendToOutput("\nNode " + ctx.ID + " is updating application status from " + msg.senderID + "\n");
+		if (ctx.appActive.putIfAbsent((int)msg.senderID, msg.lastUpdate) != null) {
+			ctx.appActive.replace((int)msg.senderID, msg.lastUpdate);
+		}
+		Tools.appendToOutput("Node " + ctx.ID + " appActive: " + ctx.appActive + "\n\n");
 	}
 }

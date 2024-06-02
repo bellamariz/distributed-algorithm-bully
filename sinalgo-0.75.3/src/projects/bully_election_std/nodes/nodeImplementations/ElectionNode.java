@@ -39,10 +39,14 @@ package projects.bully_election_std.nodes.nodeImplementations;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import projects.bully_election_std.nodes.messages.ApplicationMessage;
 import projects.bully_election_std.nodes.messages.BullyMessage;
+import projects.bully_election_std.nodes.timers.ApplicationMessageTimer;
 import projects.bully_election_std.nodes.timers.ElectionTimeoutTimer;
 import projects.bully_election_std.nodes.timers.ElectionUpdateTimer;
 import projects.bully_election_std.states.ElectionNodeState;
@@ -81,10 +85,11 @@ public class ElectionNode extends Node {
     public long c;
     public int coordinatorId;
     public ArrayList <Integer> up = new ArrayList<>();
-    public ArrayList <ApplicationStatus> lastApplicationStatus = new ArrayList<>();
+    public Map <Integer,Date> appActive = new HashMap<>();
     public int reliability;
 
     public ElectionTimeoutTimer activeTimeout = new ElectionTimeoutTimer(BullyMessage.MessageType.AYUp);
+    public ApplicationMessageTimer appMessageTimer = null;
 
     Logging logger = Logging.getLogger("election_log");
 
@@ -111,41 +116,20 @@ public class ElectionNode extends Node {
                 break;
         }
     }
-
-
-	public void setApplicationStatus(ApplicationMessage msg) {
-		ApplicationStatus newStatus = new ApplicationStatus(msg.senderID, msg.lastUpdate);
-		int index = getApplicationStatusIndex(msg.senderID);
-		
-		// TODO: Lista esta ficando com elementos repetidos
-		// Sera que eu tenho que remover o broadcast(msg) do handleUpdate?
-		
-		if (index > 0) {
-			this.lastApplicationStatus.remove(index);
-		}
-		
-		this.lastApplicationStatus.add(newStatus);
+    
+    public void startApplication() {
+    	Tools.appendToOutput("Node " + this.ID + " starting application broadcast\n");
+        this.appMessageTimer = new ApplicationMessageTimer(this.ID);
+        this.appMessageTimer.shouldFire = true;
     }
-	
-	private int getApplicationStatusIndex(long nodeID) {
-		for(int i = 0; i < this.lastApplicationStatus.size(); i++) {
-			if (this.lastApplicationStatus.get(i).getNodeID() == nodeID) {
-				return i;
-			}
-		}
-		
-		return -1;
-	}
-	
-	private String applicationStatusToString() {
-		String output = "";
-		
-		for(ApplicationStatus currStatus: this.lastApplicationStatus) {
-			output += "[ ID: " + currStatus.getNodeID() + " - Update: " + currStatus.getLastUpdate().toString() + " ]\n";
-		}
-		
-		return output;
-	}
+    
+    public void stopApplication() {
+    	if (this.appMessageTimer != null) {
+    		Tools.appendToOutput("Node " + this.ID + " pausing application broadcast\n");
+        	this.appMessageTimer.shouldFire = false;
+        	this.appMessageTimer = null;
+        }
+    }
 
     @Override
     public void handleMessages(Inbox inbox) {
@@ -157,7 +141,7 @@ public class ElectionNode extends Node {
         		this.state.handleMessage(bullyMsg);
         	}else if (msg instanceof ApplicationMessage) {
         		ApplicationMessage appMsg = (ApplicationMessage) msg;
-        		this.state.updateApplicationStatus(appMsg);
+        		this.state.handleApplication(appMsg);
         	}
         }
     }
@@ -228,13 +212,7 @@ public class ElectionNode extends Node {
 
     @Override
     public void postStep() {
-    	String output = "";
     	
-    	if (!this.lastApplicationStatus.isEmpty()){
-			output = "Node " + this.ID + " application status: " + applicationStatusToString() + "\n";
-		}
-    	
-    	Tools.appendToOutput(output);
     }
 
     @Override

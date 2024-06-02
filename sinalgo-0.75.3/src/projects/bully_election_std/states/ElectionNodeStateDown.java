@@ -11,6 +11,7 @@ public class ElectionNodeStateDown extends ElectionNodeState {
         super(ctx);
         ctx.up.clear();
         ctx.coordinatorId = -1;
+        ctx.stopApplication();
     }
 
     @Override
@@ -66,7 +67,7 @@ public class ElectionNodeStateDown extends ElectionNodeState {
     }
 
 	@Override
-	public void updateApplicationStatus(ApplicationMessage msg) {
+	public void handleApplication(ApplicationMessage msg) {
 		
 	}
 }

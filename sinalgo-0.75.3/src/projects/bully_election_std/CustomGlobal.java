@@ -2,12 +2,17 @@
 package projects.bully_election_std;
 
 
+import java.awt.Color;
 import java.io.File;
 import java.io.FileOutputStream;
 
+import projects.bully_election_std.nodes.nodeImplementations.ElectionNode;
+import projects.sample3.nodes.timers.SmsTimer;
 import sinalgo.configuration.CorruptConfigurationEntryException;
 import sinalgo.exception.SinalgoFatalException;
+import sinalgo.nodes.Node;
 import sinalgo.runtime.AbstractCustomGlobal;
+import sinalgo.runtime.nodeCollection.NodeCollectionInterface;
 import sinalgo.tools.Tools;
 import sinalgo.tools.logging.Logging;
 
@@ -42,6 +47,20 @@ public class CustomGlobal extends AbstractCustomGlobal{
 	public String baseFilepath = "output\\";
 
 	public String algoName = "STd_4";
+	
+	public void postRound() {
+		NodeCollectionInterface nodes = Tools.getNodeList();
+		
+		for(Node node: nodes) {
+			if (node instanceof ElectionNode) {
+				ElectionNode electionNode = (ElectionNode) node;
+				
+				if (electionNode.appMessageTimer != null && electionNode.appMessageTimer.shouldFire){
+					electionNode.appMessageTimer.startRelative(1, electionNode);
+				}
+			}
+		}
+	}
 	
 	@Override
 	public boolean hasTerminated() {
