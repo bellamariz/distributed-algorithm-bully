@@ -12,7 +12,7 @@ public class BullyMessage extends Message {
     public int coordID;
     public MessageType msgType;
     public boolean handleAnswer;
-    //TODO: Message timer 
+ 
     
     public BullyMessage(int senderID, int coordID, MessageType msgType, boolean handleAnswer) {
         this.senderID = senderID;
