@@ -1,18 +1,14 @@
 package projects.bully_election_bella.nodes.timers;
 
 import projects.bully_election_bella.nodes.nodeImplementations.ElectionNode;
-
-import projects.bully_election_bella.states.ElectionNodeState;
 import projects.bully_election_bella.states.ElectionNodeState.States;
-import projects.bully_election_bella.states.ElectionNodeStateNormal;
-import projects.bully_election_bella.states.ElectionNodeStateNormalCoordinator;
-import sinalgo.nodes.Node;
 import sinalgo.nodes.timers.Timer;
-import sinalgo.tools.Tools;
 
+/**
+ *  Implements timer that will take DOWN a NORMAL ElectionNode after a random interval (for DirectConnection model)
+ *  - see CustomGlobal method useRandomNodeDown.
+ */
 public class NodeDownTimer extends Timer{
-	// this timer will take DOWN a NORMAL node after a random interval
-	
 	public boolean active = false;
 	public ElectionNode node;
 	
@@ -31,7 +27,6 @@ public class NodeDownTimer extends Timer{
 	@Override
 	public void fire() {
 		if (active) {
-			Tools.appendToOutput("NodeDownTimer firing for Node " + this.node.ID + "\n");
 			this.node.neighbours.clear();
 			this.node.setState(States.Down);
 			disable();

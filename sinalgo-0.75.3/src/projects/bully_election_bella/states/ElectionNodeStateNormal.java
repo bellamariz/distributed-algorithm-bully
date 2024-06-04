@@ -85,7 +85,6 @@ public class ElectionNodeStateNormal extends ElectionNodeState {
 
             electionNode.send(msg, Tools.getNodeByID((int) electionNode.coordinatorId));
             
-            global.messagesSent++;
             electionNode.activeTimeout = new ElectionTimeoutTimer(BullyMessage.MessageType.AYOk);
             electionNode.activeTimeout.startRelative(3, electionNode);
         }
@@ -93,8 +92,6 @@ public class ElectionNodeStateNormal extends ElectionNodeState {
 
     @Override
     public void handleUpdate() {
-        global.workDone++;
-
         if (electionNode.ID > electionNode.coordinatorId){
             electionNode.setState(States.ElectionCandidate);
             //electionNode.coordinatorId = -1;
@@ -105,8 +102,8 @@ public class ElectionNodeStateNormal extends ElectionNodeState {
 	@Override
 	public void handleApplication(ApplicationMessage msg) {
 		Tools.appendToOutput("\nNode " + electionNode.ID + " is updating application status from " + msg.senderID + "\n");
-		if (electionNode.appActive.putIfAbsent((int)msg.senderID, msg.lastUpdate) != null) {
-			electionNode.appActive.replace((int)msg.senderID, msg.lastUpdate);
+		if (electionNode.application.putIfAbsent((int)msg.senderID, msg.lastUpdate) != null) {
+			electionNode.application.replace((int)msg.senderID, msg.lastUpdate);
 		}
 	}
 }

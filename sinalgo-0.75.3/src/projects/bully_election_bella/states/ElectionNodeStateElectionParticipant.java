@@ -51,13 +51,10 @@ public class ElectionNodeStateElectionParticipant extends ElectionNodeState {
 
     @Override
     public void handleSetState(BullyMessage msg) {
-        int senderId = msg.senderId;
         Tools.appendToOutput("Node " + electionNode.ID + " accepting election result\n");
 
         electionNode.coordinatorId = msg.coordinatorId;
-
         reply(msg);
-
         electionNode.setState(States.Normal);
     }
 

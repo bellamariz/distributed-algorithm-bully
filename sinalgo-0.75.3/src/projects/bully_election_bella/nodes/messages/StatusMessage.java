@@ -2,6 +2,9 @@ package projects.bully_election_bella.nodes.messages;
 
 import sinalgo.nodes.messages.Message;
 
+/**
+ *  Implements P2P messaging (for DirectConnection model).
+ */
 public class StatusMessage extends Message{
 	public long senderID;
 	public long receiverID;

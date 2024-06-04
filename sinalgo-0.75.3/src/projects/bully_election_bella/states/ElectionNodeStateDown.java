@@ -1,5 +1,6 @@
 package projects.bully_election_bella.states;
 
+import projects.bully_election_bella.CustomGlobal;
 import projects.bully_election_bella.nodes.messages.ApplicationMessage;
 import projects.bully_election_bella.nodes.messages.BullyMessage;
 import projects.bully_election_bella.nodes.nodeImplementations.ElectionNode;
@@ -50,10 +51,14 @@ public class ElectionNodeStateDown extends ElectionNodeState {
 
     @Override
     public void handleUpdate() {
-    	handleUpdateWithLastActive();
+    	if(CustomGlobal.isDirectConnectionModel(this.electionNode)) {
+    		handleUpdateWithDirectConnection();
+    	}else if(CustomGlobal.isAtennaConnectionModel(this.electionNode)) {
+    		handleUpdateWithAntenna();
+    	}
     }
     
-    public void handleUpdateWithLastActive() {
+    private void handleUpdateWithDirectConnection() {
         electionNode.checkAllNeighbours();
         
     	if (!electionNode.neighbours.isEmpty()) {
@@ -65,8 +70,7 @@ public class ElectionNodeStateDown extends ElectionNodeState {
     	}
     }
     
-    public void handleUpdateWithAntenna() {
-
+    private void handleUpdateWithAntenna() {
         electionNode.reliability--;
 
         if(electionNode.reliability <= 0){

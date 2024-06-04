@@ -9,6 +9,9 @@ import sinalgo.gui.transformation.PositionTransformation;
 import sinalgo.nodes.Node;
 import sinalgo.nodes.messages.Inbox;
 
+/**
+ *  Implements node type Antenna (for AntennaConnection model).
+ */
 public class Antenna extends Node {
 	@Override
 	public void checkRequirements() {
@@ -17,9 +20,9 @@ public class Antenna extends Node {
 	@Override
 	public void handleMessages(Inbox inbox) {
 	}
+	
 	@Override
 	public void init() {
-
 	}
 	
 	@Override

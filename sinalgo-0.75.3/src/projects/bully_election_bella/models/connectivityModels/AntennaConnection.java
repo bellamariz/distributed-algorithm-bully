@@ -53,15 +53,10 @@ public class AntennaConnection extends ConnectivityModelHelper {
 	 * @throws CorruptConfigurationEntryException When there is a missing entry in the 
 	 * config file.
 	 */
+	
 	public AntennaConnection() throws CorruptConfigurationEntryException {
 	}
-	/**
-	 * verifica se ambos os n�s s�o inst�ncias de ElectionNode
-	 * se sim, ele obt�m as antenas atuais (currentAntenna) dos n�s from e to
-	 * 
-	 * Ele retorna true se ambas as antenas n�o forem null e forem a mesma inst�ncia 
-	 * (ou seja, apontam para a mesma antena). Caso contr�rio, retorna false
-	 */
+
 	protected boolean isConnected(Node from, Node to) {
 		if(from instanceof ElectionNode && to instanceof ElectionNode) {
 			Antenna to_antenna = ((ElectionNode) to).getCurrentAntenna();

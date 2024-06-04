@@ -4,6 +4,9 @@ import java.util.Date;
 
 import sinalgo.nodes.messages.Message;
 
+/**
+ *  Implements messaging during normal application execution (state NORMAL).
+ */
 public class ApplicationMessage extends Message{
 	public long senderID;
 	public Date lastUpdate;

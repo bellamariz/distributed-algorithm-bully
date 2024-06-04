@@ -6,9 +6,11 @@ import projects.bully_election_bella.nodes.nodeImplementations.ElectionNode;
 import sinalgo.models.ConnectivityModelHelper;
 import sinalgo.nodes.Node;
 
+/**
+ *  Implements connectivity model where nodes are always connected due to global P2P messaging.
+ */
 public class DirectConnection extends ConnectivityModelHelper{
 	
-	// nodes are always connected due to P2P messaging
 	@Override
 	protected boolean isConnected(Node from, Node to) {
 		if(from instanceof ElectionNode && to instanceof ElectionNode) {

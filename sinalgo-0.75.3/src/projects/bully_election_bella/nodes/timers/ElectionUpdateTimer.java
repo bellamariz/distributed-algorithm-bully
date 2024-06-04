@@ -1,10 +1,7 @@
 package projects.bully_election_bella.nodes.timers;
 
-import java.util.Date;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
-import projects.bully_election_bella.CustomGlobal;
+import projects.bully_election_bella.models.connectivityModels.AntennaConnection;
+import projects.bully_election_bella.models.connectivityModels.DirectConnection;
 import projects.bully_election_bella.nodes.nodeImplementations.Antenna;
 import projects.bully_election_bella.nodes.nodeImplementations.ElectionNode;
 import projects.bully_election_bella.states.ElectionNodeState;
@@ -16,8 +13,11 @@ import sinalgo.nodes.Position;
 import sinalgo.nodes.timers.Timer;
 import sinalgo.tools.Tools;
 
+/**
+ *  Implements timer to update Node status after every round.
+ */
 public class ElectionUpdateTimer extends Timer {
-	int radius;
+	private int radius;
 	
 	public ElectionUpdateTimer() throws CorruptConfigurationEntryException {
 		radius = Configuration.getIntegerParameter("GeometricNodeCollection/rMax") / 2;
@@ -26,21 +26,24 @@ public class ElectionUpdateTimer extends Timer {
 	
 	@Override
 	public void fire() {
-		fireWithDirectConnection();
-	}
-	
-	public void fireWithDirectConnection() {
 		ElectionNode node = (ElectionNode) this.getTargetNode();
 		
+		if(node.getConnectivityModel() instanceof DirectConnection) {
+			fireWithDirectConnection(node);
+		}else if(node.getConnectivityModel() instanceof AntennaConnection) {
+			fireWithAntennaModel(node);
+		}
+	}
+	
+	public void fireWithDirectConnection(ElectionNode node) {
 		node.checkAllNeighbours();
+		
 		Tools.reevaluateConnections();
 		node.state.handleUpdate();
-		
 		this.startRelative(1, this.getTargetNode());
 	}
 	
-	public void fireWithAntennaModel() {
-		ElectionNode mn = (ElectionNode) this.getTargetNode();
+	public void fireWithAntennaModel(ElectionNode mn) {
 		Position pos = mn.getPosition();
 
 		Antenna connectedAntenna = null;
@@ -59,9 +62,9 @@ public class ElectionUpdateTimer extends Timer {
 		}
 
 		mn.setCurrentAntenna(connectedAntenna);
+		
 		Tools.reevaluateConnections();
 		mn.state.handleUpdate();
-
 		this.startRelative(1, this.getTargetNode());
 	}
 

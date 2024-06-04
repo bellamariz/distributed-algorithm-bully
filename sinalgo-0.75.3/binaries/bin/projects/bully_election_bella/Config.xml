@@ -29,13 +29,13 @@
 		<interference value="false" />
 
 		<!--Set this flag to true if interference only decreases if fewer messages are being sent and increases if more messages are being sent. If this flag is NOT set, interference for all messages currently being sent is reevaluated whenever a new message is being sent, and whenever a message stops being sent. When this flag is set, interference tests are reduced to a minimum, using the additivity property. This flag only affects the asynchronous mode. In synchronous mode, interference is checked exactly once for every message in every round.-->
-		<interferenceIsAdditive value="true" />
+		<interferenceIsAdditive value="false" />
 
 		<!--Set this flag to true if a node can receive messages while it is sending messages itself, otherwise to false. This flag is only relevant if interference is turned on, and it must be handled properly in the used interference model.-->
-		<canReceiveWhileSending value="true" />
+		<canReceiveWhileSending value="false" />
 
 		<!--Set this flag to true if a node can receive multiple messages in parallel, otherwise to false. When set to false, concurrent packets are all dropped. This flag is only relevant if interference is turned on, and it must be handled properly in the used interference model.-->
-		<canReceiveMultiplePacketsInParallel value="true" />
+		<canReceiveMultiplePacketsInParallel value="false" />
 
 		<!--The default type of edges to be used-->
 		<edgeType value="Edge" />
@@ -53,7 +53,7 @@
 		<generateNAckMessages value="false" />
 
 		<!--This flag only affects the asynchronous simulation mode.  When set to true, the framework calls handleEmptyEventQueue  on the project specific CustomGlobal whenever the event queue  becomes empty.-->
-		<handleEmptyEventQueue value="true" />
+		<handleEmptyEventQueue value="false" />
 
 		<!--The java-command used to start the simulation process. E.g. 'java', 'nice -n 19 java', 'time java' This command should NOT contain the -Xmx flag, nor set the classpath of java.-->
 		<javaCmd value="java" />
@@ -89,7 +89,7 @@
 		<logConfiguration value="true" />
 
 		<!--If set to true, the log files are flushed every time a new log is added.-->
-		<eagerFlush value="false" />
+		<eagerFlush value="true" />
 
 		<!--***********************************************************************-->
 		<!--  GUI                                                                  -->
@@ -131,13 +131,13 @@
 		<!--  Models                                                               -->
 		<!--***********************************************************************-->
 		<!--The message transmission model used when none is specified-->
-		<DefaultMessageTransmissionModel value="ConstantTime" />
+		<DefaultMessageTransmissionModel value="bully_election_bella:ConstantTime" />
 
 		<!--Default connectivity model used when none is specified-->
-		<DefaultConnectivityModel value="bully_election_std:AntennaConnection" />
+		<DefaultConnectivityModel value="bully_election_bella:DirectConnection" />
 
 		<!--Default distribution model used when none is specified-->
-		<DefaultDistributionModel value="Grid2D" />
+		<DefaultDistributionModel value="Random" />
 
 		<!--Default interference model used when none is specified-->
 		<DefaultInterferenceModel value="NoInterference" />
@@ -149,7 +149,7 @@
 		<DefaultReliabilityModel value="ReliableDelivery" />
 
 		<!--Default node implementation used when none is specified-->
-		<DefaultNodeImplementation value="bully_election_std:ElectionNode" />
+		<DefaultNodeImplementation value="bully_election_bella:ElectionNode" />
 
 		<!--Show the models implemented by all projects in the drop down options. When set to false, only the models by the selected project and the default project are shown.-->
 		<showModelsOfAllProjects value="false" />
@@ -226,13 +226,13 @@
 	</Framework>
 	<Custom>
 		<GeometricNodeCollection rMax="750"/>
-        <UDG rMax="350"/>
-		
+		<UDG rMax="500"/>
+
 		<AutoStart value="false"/>
 		<ExitAfter value="false" rounds="100"/>
 		
 		<MessageTransmission constantTime="1"/>
-		<RandomMessageTransmission distribution="Uniform" min="2" max="10"/>
+		<RandomMessageTransmission distribution="Uniform" min="1" max="2"/>
 		
 		<RandomDirection>
 			<NodeSpeed distribution="Gaussian" mean="2" variance="6" />
@@ -241,9 +241,9 @@
 		</RandomDirection>
 		
 		<RandomWayPoint>
-			<Speed distribution="Gaussian" mean="10" variance="20" />
-			<WaitingTime distribution="Poisson" lambda="10" />
-		</RandomWayPoint>
+            <Speed distribution="Gaussian" mean="10" variance="20"/>
+            <WaitingTime distribution="Poisson" lambda="10"/>
+        </RandomWayPoint>
 		
 		<Node defaultSize="10" />
 		
@@ -253,9 +253,8 @@
 			
 		<Edge passiveColor="0x8888cc" activeColor="0xdd7700"/>
 		
+		<NumberOfNodes total="10"/>			
 		<MobileNode Size="4"/>
-		<NumberOfNodes total="0"/>
-		<Malicious str=""/>				
 	</Custom>
 </Document>
 

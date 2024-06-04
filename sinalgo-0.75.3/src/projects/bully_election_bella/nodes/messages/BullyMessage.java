@@ -2,6 +2,9 @@ package projects.bully_election_bella.nodes.messages;
 
 import sinalgo.nodes.messages.Message;
 
+/**
+ *  Implements messaging during ELECTION state.
+ */
 public class BullyMessage extends Message{
     public enum MessageType {
         AYUp, AYOk, EnterElection, SetCoordinator, SetState

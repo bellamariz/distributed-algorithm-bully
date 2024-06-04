@@ -43,6 +43,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import projects.bully_election_bella.CustomGlobal;
 import projects.bully_election_bella.nodes.messages.ApplicationMessage;
 import projects.bully_election_bella.nodes.messages.BullyMessage;
 import projects.bully_election_bella.nodes.messages.StatusMessage;
@@ -64,41 +65,38 @@ import sinalgo.gui.transformation.PositionTransformation;
 import sinalgo.nodes.Node;
 import sinalgo.nodes.messages.Inbox;
 import sinalgo.nodes.messages.Message;
+import sinalgo.runtime.nodeCollection.NodeCollectionInterface;
 import sinalgo.tools.Tools;
 import sinalgo.tools.logging.Logging;
 
 /**
- * The Node of the sample project.
+ *  Implements node type ElectionNode (network nodes which will go through ELECTION).
  */
 public class ElectionNode extends Node {
+	
+	CustomGlobal global = (CustomGlobal) Tools.getCustomGlobal();
 
     public ElectionNodeState state;
-
-    private Antenna currentAntenna = null; // the antenna ths node is connected to, null if this node is not connected to an antenna
-
-    public Antenna getCurrentAntenna() {
-        return currentAntenna;
-    }
-
-    public void setCurrentAntenna(Antenna a) { currentAntenna = a; }
-
     public long c;
     public int coordinatorId;
-    public ArrayList <Integer> up = new ArrayList<>();
-    public Map <Integer,Date> appActive = new HashMap<>();
-    public Map <Integer,Boolean> neighbours = new HashMap();
     public int reliability;
+    
+    // when in AntennaConnection model
+    private Antenna currentAntenna = null;
+    public Antenna getCurrentAntenna() { return currentAntenna; }
+    public void setCurrentAntenna(Antenna a) { currentAntenna = a; }
+    
+    // up: nodes not DOWN, application: node's latest application status, neighbours: when in DirectConnection model
+    public ArrayList <Integer> up = new ArrayList<>();
+    public Map <Integer,Date> application = new HashMap<>();
+    public Map <Integer,Boolean> neighbours = new HashMap<>();
 
+    // node timers
     public ElectionTimeoutTimer activeTimeout = new ElectionTimeoutTimer(BullyMessage.MessageType.AYUp);
     public ApplicationMessageTimer appMessageTimer = null;
     public NodeDownTimer nodeDownTimer = null;
-    public boolean isUnstable = false;
 
     Logging logger = Logging.getLogger("election_log");
-
-    private boolean isCoordinator() {
-        return (this.ID == coordinatorId);
-    }
 
     public void setState(ElectionNodeState.States state) {
         switch (state) {
@@ -121,14 +119,14 @@ public class ElectionNode extends Node {
     }
     
     public void startApplication() {
-    	Tools.appendToOutput("Node " + this.ID + " starting application broadcast\n");
+    	Tools.appendToOutput("\n[Application] Node " + this.ID + " starting application broadcast\n");
         this.appMessageTimer = new ApplicationMessageTimer(this.ID);
         this.appMessageTimer.shouldFire = true;
     }
     
     public void stopApplication() {
     	if (this.appMessageTimer != null) {
-    		Tools.appendToOutput("Node " + this.ID + " pausing application broadcast\n");
+    		Tools.appendToOutput("[Application] Node " + this.ID + " stopping application broadcast\n");
         	this.appMessageTimer.shouldFire = false;
         	this.appMessageTimer = null;
         }
@@ -150,12 +148,15 @@ public class ElectionNode extends Node {
         	
         	if (msg instanceof BullyMessage) {
         		BullyMessage bullyMsg = (BullyMessage) msg;
+        		global.electionMessages++;
         		this.state.handleMessage(bullyMsg);
         	}else if (msg instanceof ApplicationMessage) {
         		ApplicationMessage appMsg = (ApplicationMessage) msg;
+        		global.applicationMessages++;
         		this.state.handleApplication(appMsg);
         	}else if (msg instanceof StatusMessage) {
         		StatusMessage statusMsg = (StatusMessage) msg;
+        		global.statusP2PMessages++;
         		int senderID = (int) statusMsg.senderID;
         		this.neighbours.put((int) senderID, true);
         	}
@@ -209,8 +210,6 @@ public class ElectionNode extends Node {
         }
 
         // set the color of this node
-        // this.setColor(new Color((float) 0.5 / (1 + this.state.getValue()), (float)
-        // 0.5, (float) 1.0 / (1 + this.state.getValue())));
         this.setColor(nodeColor);
 
         // set the text of this node
@@ -222,7 +221,6 @@ public class ElectionNode extends Node {
 
     @Override
     public void postStep() {
-//    	Tools.appendToOutput("Node " + this.ID + " neighbours: " + this.neighbours + "\n");
     }
 
     @Override

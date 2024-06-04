@@ -4,14 +4,17 @@ package projects.bully_election_bella;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.Random;
 
+import projects.bully_election_bella.models.connectivityModels.AntennaConnection;
+import projects.bully_election_bella.models.connectivityModels.DirectConnection;
 import projects.bully_election_bella.nodes.nodeImplementations.ElectionNode;
 import projects.bully_election_bella.nodes.timers.NodeDownTimer;
-import projects.bully_election_bella.states.ElectionNodeState;
 import projects.bully_election_bella.states.ElectionNodeStateNormal;
 import projects.bully_election_bella.states.ElectionNodeStateNormalCoordinator;
 import sinalgo.configuration.CorruptConfigurationEntryException;
 import sinalgo.exception.SinalgoFatalException;
+import sinalgo.models.ConnectivityModel;
 import sinalgo.nodes.Node;
 import sinalgo.runtime.AbstractCustomGlobal;
 import sinalgo.runtime.nodeCollection.NodeCollectionInterface;
@@ -40,52 +43,73 @@ import sinalgo.tools.logging.Logging;
  * added to the GUI. 
  */
 public class CustomGlobal extends AbstractCustomGlobal{
-
-	public long workDone = 0;
-	public long messagesSent = 0;
+	private Random rand = new Random();
+	private String baseFilepath = "output\\";
+	private String algoName = "bully_bella";
+	private String connModel;
+	private double steps;
+	private static final int MIN_RANDOM = 10;
+	private static final int MAX_RANDOM = 20;
+	
+	public int statusP2PMessages = 0;
+	public int electionMessages = 0;
+	public int applicationMessages = 0;
+	public int sentMessages = 0;
+	public int totalMessages = 0;
 	public int totalNodes = 0;
-	public String maliciousStr;
-
-	public String baseFilepath = "output\\";
-
-	public String algoName = "STd_4";
+	public static final double TIME_MSG_STATUS_DELIVERY = 2.0;
 	
-	
-	public static double TIME_MSG_STATUS_DELIVERY = 2.0;
-	public static double TIME_MSG_STATUS_REPLY = 3.0;
-	public static double TIME_MSG_STATUS_LIMIT = (2*TIME_MSG_STATUS_DELIVERY)+TIME_MSG_STATUS_REPLY;
+	// flag tracking that there is a node with an active NodeDownTimer
+	// only one node will be taken down per timer
 	public boolean nodeDownExists = false;
 	
 	
-	public void preRound() {
-		// at the beginning of every round, get a random node
-		Node node = Tools.getNodeList().getRandomNode();
-		
-		// if node is ElectionNode + there are no nodes programmed with a NodeDownTimer
-		if (node instanceof ElectionNode && !nodeDownExists) {
-			ElectionNode electionNode = (ElectionNode) node;
+	// used in DirectConnection connectivity model to set a random node as DOWN (one per time)
+	private void useRandomNodeDown(Node randomNode) {
+		if (randomNode instanceof ElectionNode && !nodeDownExists) {
+			ElectionNode electionNode = (ElectionNode) randomNode;
 			
-			// if node is in NORMAL state, create a random timer to take it down
+			// if node is in NORMAL state, create a random timer to take it DOWN
 			if (electionNode.state instanceof ElectionNodeStateNormal || 
 					electionNode.state instanceof ElectionNodeStateNormalCoordinator) {
 				
 				if (electionNode.nodeDownTimer == null) {
+					int random = rand.nextInt(MAX_RANDOM - MIN_RANDOM + 1) + MIN_RANDOM;
 					electionNode.nodeDownTimer = new NodeDownTimer(electionNode);
-					electionNode.nodeDownTimer.enable();
 					
 					// NodeDownTimer will disable itself after firing
-					electionNode.nodeDownTimer.startRelative(20, electionNode);
+					electionNode.nodeDownTimer.enable();
+					electionNode.nodeDownTimer.startRelative(random, electionNode);
 					
-					// flag tracking that there is a node with a NodeDownTimer
 					nodeDownExists = true;
 					
-					Tools.appendToOutput("Node " + electionNode.ID + " is set up to fail in 20 round(s)\n");
+					Tools.appendToOutput("\n[Node Down Timer] Node " + electionNode.ID + " in " + random + " rounds\n\n");
 				}
 			}
 		}
 	}
 	
+    public static boolean isDirectConnectionModel(Node node) {
+    	return (node.getConnectivityModel() instanceof DirectConnection);
+    }
+    
+    public static boolean isAtennaConnectionModel(Node node) {
+    	return (node.getConnectivityModel() instanceof AntennaConnection);
+    }
 	
+	@Override
+	public void preRound() {
+		// run only after nodes have been initialized
+		if(Tools.getNodeList().size() > 0) {
+			Node randomNode = Tools.getNodeList().getRandomNode();
+			
+			if (isDirectConnectionModel(randomNode)) {
+				useRandomNodeDown(randomNode);
+			}
+		}
+	}
+	
+	@Override
 	public void postRound() {
 		NodeCollectionInterface nodes = Tools.getNodeList();
 		
@@ -93,19 +117,18 @@ public class CustomGlobal extends AbstractCustomGlobal{
 			if (node instanceof ElectionNode) {
 				ElectionNode electionNode = (ElectionNode) node;
 				
-				Tools.appendToOutput("Node " + electionNode.ID + " appActive: " + electionNode.appActive + "\n\n");
-				
+				// reload AppMessageTimer
 				if (electionNode.appMessageTimer != null && electionNode.appMessageTimer.shouldFire){
 					electionNode.appMessageTimer.startRelative(1, electionNode);
+					
+					Tools.appendToOutput("\n[Application] Node " + electionNode.ID + " - Last Active: " + electionNode.application + "\n\n");
 				}
 				
-				// if node was programmed with a NodeDownTimer and it already fired
+				// reload NodeDownTimer - if it was programmed and already fired
 				if (nodeDownExists) {
 					if (electionNode.nodeDownTimer != null && !electionNode.nodeDownTimer.active) {	
 						electionNode.nodeDownTimer = null;
 						nodeDownExists = false;
-						
-						Tools.appendToOutput("Resetting node down timer for node " + electionNode.ID + "\n");
 					}
 				}
 			}
@@ -123,7 +146,16 @@ public class CustomGlobal extends AbstractCustomGlobal{
 
         try{
 			totalNodes = Tools.getNodeList().size();
-			appendToFile();
+			
+			if(totalNodes > 0) {
+				connModel = Tools.getRandomNode().getConnectivityModel().toString();
+			}
+			
+	        steps = Tools.getGlobalTime();
+	        sentMessages = Tools.getNumberOfSentMessages();
+	        totalMessages = electionMessages+applicationMessages+statusP2PMessages;
+	        
+	        appendToFile();
 		}catch (CorruptConfigurationEntryException e) {
 			logger.logln("Favor criar NumberOfNodes em Config.xml");
             throw new SinalgoFatalException(e.getMessage());
@@ -131,32 +163,31 @@ public class CustomGlobal extends AbstractCustomGlobal{
 			logger.logln("Falhou ao criar csv");
 			e.printStackTrace();
 		}
-
+        
 		logger.logln("Number of nodes: " + totalNodes);
-		logger.logln("Total work done: " + workDone);
-		logger.logln("Total messages sent: " + messagesSent);
-		logger.logln("Simulation steps: " + Tools.getGlobalTime());
-		logger.logln("Total messages " + (workDone+messagesSent));
+		logger.logln("Connectivity model: " + connModel);
+		logger.logln("Simulation steps: " + steps);
+		logger.logln("Total messages sent: " + sentMessages);
+		logger.logln("- Election messages: " + electionMessages);
+		logger.logln("- Application messages: " + applicationMessages);
+		logger.logln("- Status P2P messages: " + statusP2PMessages);
+		logger.logln("Total messages " + totalMessages);
 	}
-
-	public void appendToFile() throws Exception {
-		/*
-	FileOutputStream fos = new FileOutputStream(baseFilepath + algoName  + "_" + totalNodes + "_nodes.csv", true);
-		fos.write((workDone + ", " + messagesSent + ", " + Tools.getGlobalTime() + "\r\n").getBytes());
-		fos.close();
-	}
-	*/
-	File file = new File(baseFilepath + algoName  + "_" + totalNodes + "_nodes.csv");
-    boolean fileExists = file.exists();
-
-    try (FileOutputStream fos = new FileOutputStream(file, true)) {
-        if (!fileExists) {
-            // Write headers if the file does not exist
-            fos.write("workDone, messagesSent, simulationTime,TotalMenssages\r\n".getBytes());
-        }
-        fos.write((workDone + ", " + messagesSent + ", " + Tools.getGlobalTime() + ", " + (messagesSent+workDone)  + "\r\n").getBytes());
-        fos.close();
-    }
+	
+	// write output to file
+	private void appendToFile() throws Exception {
+		File file = new File(baseFilepath + algoName  + "_" + totalNodes + "_nodes.csv");
+	    boolean fileExists = file.exists();
+	
+	    try (FileOutputStream fos = new FileOutputStream(file, true)) {
+	        if (!fileExists) {
+	            fos.write("totalNodes, connectivityModel, simulationTime, sentMessages, election, application, statusP2P, total\r\n".getBytes());
+	        }
+	        
+	        fos.write((totalNodes + ", " + connModel + ", " + steps + ", " + sentMessages + ", " + 
+	        		electionMessages + ", " + applicationMessages + ", " + statusP2PMessages + ", " + totalMessages + "\r\n").getBytes());
+	        fos.close();
+	    }
 	}
 }
 

@@ -117,7 +117,6 @@ public class ElectionNodeStateElectionCandidate extends ElectionNodeState {
     @Override
     public void handleTimeout() {
         if (ctx.activeTimeout.type == BullyMessage.MessageType.AYUp) {
-
                 Tools.appendToOutput("Node " + ctx.ID + " calling for elections.\n");
                 BullyMessage msg = new BullyMessage(ctx.ID, ctx.c, ctx.coordinatorId, BullyMessage.MessageType.EnterElection, false);
 

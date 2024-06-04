@@ -11,7 +11,7 @@ import sinalgo.tools.Tools;
 
 public class ElectionNodeStateNormalCoordinator extends ElectionNodeState {
 
-    private final ArrayList<Long> responded = new ArrayList<>();
+    private final ArrayList<Integer> responded = new ArrayList<>();
 
     CustomGlobal global;
 
@@ -19,28 +19,25 @@ public class ElectionNodeStateNormalCoordinator extends ElectionNodeState {
         super(electionNode);
 
         global = (CustomGlobal) Tools.getCustomGlobal();
-        
-        Tools.appendToOutput("Node " + electionNode.ID + " became the coordinator\n");
-        
+   
         electionNode.startApplication();
-
-        pingChildren();
+        checkMembers();
     }
 
-    public void pingChildren() {
+    public void checkMembers() {
         responded.clear();
 
         if (electionNode.activeTimeout != null) {
             electionNode.activeTimeout.shouldFire = false;
         }
+        
         BullyMessage msg = new BullyMessage(electionNode.ID, electionNode.c, electionNode.coordinatorId, BullyMessage.MessageType.AYUp, false);
         for (long id: electionNode.up) {
             ElectionNode n = (ElectionNode) Tools.getNodeByID((int)id);
             electionNode.send(msg.clone(), n);
-            global.messagesSent++;
         }
 
-        electionNode.activeTimeout = new ElectionTimeoutTimer(BullyMessage.MessageType.AYOk);
+        electionNode.activeTimeout = new ElectionTimeoutTimer(BullyMessage.MessageType.AYUp);
         electionNode.activeTimeout.startRelative(3, electionNode);
         Tools.appendToOutput("Node " + electionNode.ID + " checking if children are alive\n");
     }
@@ -55,7 +52,7 @@ public class ElectionNodeStateNormalCoordinator extends ElectionNodeState {
         if (!electionNode.up.contains(msg.senderId)) {
             Tools.appendToOutput("Node " + electionNode.ID + " new child " + msg.senderId + " found\n");
             electionNode.up.add(msg.senderId);
-            pingChildren();
+            checkMembers();
         }
         reply(msg);
     }
@@ -88,7 +85,7 @@ public class ElectionNodeStateNormalCoordinator extends ElectionNodeState {
     @Override
     public void handleAck(BullyMessage msg) {
         if (msg.type == BullyMessage.MessageType.AYUp && electionNode.up.contains(msg.senderId)) {
-            responded.add((long) msg.senderId);
+            responded.add(msg.senderId);
             Tools.appendToOutput("Node " + electionNode.ID + " child " + msg.senderId + " responded\n");
         }
     }
@@ -97,7 +94,7 @@ public class ElectionNodeStateNormalCoordinator extends ElectionNodeState {
     public void handleTimeout() {
         electionNode.reliability++;
 
-        pingChildren();
+        checkMembers();
         if (responded.containsAll(electionNode.up)) {
             //pingChildren();
             //electionNode.reliability++;
@@ -108,15 +105,14 @@ public class ElectionNodeStateNormalCoordinator extends ElectionNodeState {
     }
 
     @Override
-    public void handleUpdate() {
-        global.workDone++;      
+    public void handleUpdate() {     
     }
 
 	@Override
 	public void handleApplication(ApplicationMessage msg) {
 		Tools.appendToOutput("\nNode " + electionNode.ID + " is updating application status from " + msg.senderID + "\n");
-		if (electionNode.appActive.putIfAbsent((int)msg.senderID, msg.lastUpdate) != null) {
-			electionNode.appActive.replace((int)msg.senderID, msg.lastUpdate);
+		if (electionNode.application.putIfAbsent((int)msg.senderID, msg.lastUpdate) != null) {
+			electionNode.application.replace((int)msg.senderID, msg.lastUpdate);
 		}
 	}
 }
