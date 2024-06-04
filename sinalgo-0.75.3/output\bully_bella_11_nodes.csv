@@ -1,3 +1,4 @@
-totalNodes, connectivityModel, simulationTime, sentMessages, election, application, statusP2P, total
-11, projects.bully_election_bella.models.connectivityModels.AntennaConnection@2c3e8914, 206.0, 13749, 1290, 12273, 0, 13563
-11, projects.bully_election_bella.models.connectivityModels.AntennaConnection@1942864b, 200.0, 7589, 1011, 6381, 0, 7392
+totalNodes, connectivityModel, simulationTime, totalMessages, election, application, statusP2P
+11, projects.bully_election_bella.models.connectivityModels.AntennaConnection@7a69e425, 150.0, 6094, 745, 5349, 0
+11, projects.bully_election_bella.models.connectivityModels.AntennaConnection@409335cf, 50.0, 2352, 287, 2065, 0
+11, projects.bully_election_bella.models.connectivityModels.AntennaConnection@3a7dfab9, 300.0, 10656, 1277, 9379, 0

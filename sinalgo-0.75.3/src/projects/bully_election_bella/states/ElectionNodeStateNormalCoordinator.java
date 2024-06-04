@@ -110,7 +110,7 @@ public class ElectionNodeStateNormalCoordinator extends ElectionNodeState {
 
 	@Override
 	public void handleApplication(ApplicationMessage msg) {
-		Tools.appendToOutput("\nNode " + electionNode.ID + " is updating application status from " + msg.senderID + "\n");
+//		Tools.appendToOutput("\nNode " + electionNode.ID + " is updating application status from " + msg.senderID + "\n");
 		if (electionNode.application.putIfAbsent((int)msg.senderID, msg.lastUpdate) != null) {
 			electionNode.application.replace((int)msg.senderID, msg.lastUpdate);
 		}

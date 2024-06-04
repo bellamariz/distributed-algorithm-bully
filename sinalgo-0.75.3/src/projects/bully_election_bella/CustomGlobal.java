@@ -152,7 +152,7 @@ public class CustomGlobal extends AbstractCustomGlobal{
 			}
 			
 	        steps = Tools.getGlobalTime();
-	        sentMessages = Tools.getNumberOfSentMessages();
+//	        sentMessages = Tools.getNumberOfSentMessages();
 	        totalMessages = electionMessages+applicationMessages+statusP2PMessages;
 	        
 	        appendToFile();
@@ -167,11 +167,11 @@ public class CustomGlobal extends AbstractCustomGlobal{
 		logger.logln("Number of nodes: " + totalNodes);
 		logger.logln("Connectivity model: " + connModel);
 		logger.logln("Simulation steps: " + steps);
-		logger.logln("Total messages sent: " + sentMessages);
+		logger.logln("Total messages: " + totalMessages);
 		logger.logln("- Election messages: " + electionMessages);
 		logger.logln("- Application messages: " + applicationMessages);
 		logger.logln("- Status P2P messages: " + statusP2PMessages);
-		logger.logln("Total messages " + totalMessages);
+//		logger.logln("Total messages sent: " + sentMessages);
 	}
 	
 	// write output to file
@@ -181,11 +181,11 @@ public class CustomGlobal extends AbstractCustomGlobal{
 	
 	    try (FileOutputStream fos = new FileOutputStream(file, true)) {
 	        if (!fileExists) {
-	            fos.write("totalNodes, connectivityModel, simulationTime, sentMessages, election, application, statusP2P, total\r\n".getBytes());
+	            fos.write("totalNodes, connectivityModel, simulationTime, totalMessages, election, application, statusP2P\r\n".getBytes());
 	        }
 	        
-	        fos.write((totalNodes + ", " + connModel + ", " + steps + ", " + sentMessages + ", " + 
-	        		electionMessages + ", " + applicationMessages + ", " + statusP2PMessages + ", " + totalMessages + "\r\n").getBytes());
+	        fos.write((totalNodes + ", " + connModel + ", " + steps + ", " + totalMessages + ", " +
+	        		electionMessages + ", " + applicationMessages + ", " + statusP2PMessages + "\r\n").getBytes());
 	        fos.close();
 	    }
 	}

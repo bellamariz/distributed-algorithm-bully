@@ -17,11 +17,11 @@ public class ElectionNodeStateNormal extends ElectionNodeState {
 
         global = (CustomGlobal) Tools.getCustomGlobal();
         
-        electionNode.startApplication();
-        
         electionNode.c = 0;
 
         Tools.appendToOutput("Node " + electionNode.ID + " going back to normal\n");
+        electionNode.startApplication();
+        
         electionNode.activeTimeout = new ElectionTimeoutTimer(BullyMessage.MessageType.AYOk);
         electionNode.activeTimeout.startRelative(6, electionNode); 
     }
@@ -101,7 +101,7 @@ public class ElectionNodeStateNormal extends ElectionNodeState {
 
 	@Override
 	public void handleApplication(ApplicationMessage msg) {
-		Tools.appendToOutput("\nNode " + electionNode.ID + " is updating application status from " + msg.senderID + "\n");
+//		Tools.appendToOutput("\nNode " + electionNode.ID + " is updating application status from " + msg.senderID + "\n");
 		if (electionNode.application.putIfAbsent((int)msg.senderID, msg.lastUpdate) != null) {
 			electionNode.application.replace((int)msg.senderID, msg.lastUpdate);
 		}
