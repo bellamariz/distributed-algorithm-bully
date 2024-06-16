@@ -1,0 +1,2 @@
+totalNodes, connectivityModel, simulationTime, totalMessages, election, application, statusP2P
+40, projects.bully_election_bella.models.connectivityModels.DirectConnection@62ee1b, 50.0, 127083, 5500, 38223, 83360
